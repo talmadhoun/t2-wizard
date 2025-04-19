@@ -1,70 +1,95 @@
-# Getting Started with Create React App
+# 🇨🇦 T2 & T5 Filing Wizard for Simple Canadian Corporations
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A sleek, modern, browser-based wizard to prepare your **T2 Corporate Tax Return** and **T5 Dividend Slips** — tailored for small business owners who want control, clarity, and CRA-compliant results.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🧾 What It Does
 
-### `npm start`
+- ✅ Guides you step-by-step through **T2 return preparation**
+- ✅ Supports **T5 slip generation** for dividend-paying corporations
+- ✅ Handles schedules: 1, 3, 4, 5, 7, 8, 9, 23, 50, GIFI 100/125/141
+- ✅ Automatically maps entries to CRA form lines (e.g., Line 061 – Tax Year End)
+- ✅ Calculates gross-up amounts and dividend tax credits
+- ✅ Provides a **real-time T5 preview**
+- ✅ Auto-saves form data in browser (using `localStorage`)
+- ✅ Highlights missing or conditionally required schedules
+- ✅ Prepares everything you need to **manually input into FutureTax**
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## ✅ Best Suited For
 
-### `npm test`
+This wizard is ideal for Canadian-Controlled Private Corporations (CCPCs) with:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- No employees or payroll obligations
+- No foreign income, assets, or subsidiaries
+- No investment income or capital gains
+- No partnerships or intercompany relationships
+- One shareholder (you!)
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## ❌ Not For
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Complex corporate structures
+- Firms with employees or multiple shareholders
+- Electronic CRA T2 filing via XML or NetFile
+- Accountants managing dozens of clients
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## ⚠️ Disclaimer
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+This tool **does not submit your tax return** to the CRA.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+It helps you **prepare and organize** your tax data for input into **FutureTax**, **GenuTax**, or **other CRA-certified software**.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Use at your own risk. Always double-check your entries and consult a tax professional if unsure.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## 🚀 Tech Stack
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- ⚛️ React 18
+- 🎨 TailwindCSS (Stripe/Linear-inspired styles)
+- 🧠 Conditional rendering with real-time validation
+- 💾 `localStorage` for persistent auto-save
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+## 🛠️ Setup Instructions
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Local Development
 
-### Analyzing the Bundle Size
+```bash
+git clone https://github.com/your-username/t2-t5-filing-wizard.git
+cd t2-t5-filing-wizard
+npm install
+npm run dev
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Then open [http://localhost:3000](http://localhost:3000)
 
-### Making a Progressive Web App
+### One-Click Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Deploy to:
 
-### Advanced Configuration
+- [Vercel](https://vercel.com)
+- [Netlify](https://netlify.com)
+- [Cloudflare Pages](https://pages.cloudflare.com)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## 📷 Screenshots
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Coming soon — or submit your own!
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 🙏 Acknowledgements
+
+Made with ❤️ to simplify small business tax prep in Canada.
+Inspired by years of frustration.
+
+> Built by Canadians. For Canadians.
