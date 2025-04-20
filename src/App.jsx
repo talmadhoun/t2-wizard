@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronRight, ChevronLeft, HelpCircle, Check, AlertTriangle, BookOpen, Briefcase, Home, FileText, Calculator, DollarSign, CheckCircle, PieChart, User, Calendar, Hash, FileSpreadsheet, RefreshCw } from 'lucide-react';
 
 // Main Wizard Component
@@ -15,6 +15,21 @@ const T2Wizard = () => {
     position: { x: 0, y: 0 }
   });
   const [showResetModal, setShowResetModal] = useState(false);
+  
+  // Format a date consistently, preserving the exact date without timezone shifts
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    
+    // Parse the date string and extract year, month, day
+    // This approach avoids timezone issues by manually constructing the date parts
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1; // getMonth() returns 0-11
+    const day = date.getDate();
+    
+    // Return in MM/DD/YYYY format
+    return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
+  };
   
   // Load saved form data from localStorage on initial render
   useEffect(() => {
@@ -49,9 +64,176 @@ const T2Wizard = () => {
   
   // Questions and conditional logic
   const steps = [
-    // ... [Your existing steps here]
-    
-    // Section: T5 Slip Information (Add this new section)
+    // Start with required core steps without conditions
+    {
+      id: 'corporationName',
+      section: 'identification',
+      title: 'Corporation Name',
+      question: 'What is the full legal name of your corporation?',
+      fieldType: 'text',
+      tooltip: 'Enter the complete legal name as it appears on your incorporation documents.',
+      formLine: 'T2 - Line 1 - Corporation name',
+      required: true
+    },
+    {
+      id: 'businessNumber',
+      section: 'identification',
+      title: 'Business Number',
+      question: 'What is your corporation\'s 9-digit business number?',
+      fieldType: 'text',
+      placeholder: '123456789',
+      tooltip: 'Enter your 9-digit business number assigned by the CRA.',
+      formLine: 'T2 - Line 2 - Business number',
+      required: true
+    },
+    {
+      id: 'corporationType',
+      section: 'identification',
+      title: 'Corporation Type',
+      question: 'What type of corporation is filing this return?',
+      fieldType: 'select',
+      options: [
+        { value: 'ccpc', label: 'Canadian-Controlled Private Corporation (CCPC)' },
+        { value: 'other-private', label: 'Other Private Corporation' },
+        { value: 'public', label: 'Public Corporation' },
+        { value: 'other', label: 'Other Corporation Type' }
+      ],
+      tooltip: 'Select the type of corporation as classified by the Income Tax Act.',
+      formLine: 'T2 - Line 3 - Type of corporation',
+      required: true
+    },
+    {
+      id: 'taxYearStart',
+      section: 'identification',
+      title: 'Tax Year Start',
+      question: 'What is the start date of this tax year?',
+      fieldType: 'date',
+      tooltip: 'Enter the first day of the current tax year.',
+      formLine: 'T2 - Line 4 - Tax year start',
+      required: true
+    },
+    {
+      id: 'taxYearEnd',
+      section: 'identification',
+      title: 'Tax Year End',
+      question: 'What is the end date of this tax year?',
+      fieldType: 'date',
+      tooltip: 'Enter the last day of the current tax year.',
+      formLine: 'T2 - Line 5 - Tax year end',
+      required: true
+    },
+    {
+      id: 'jurisdictionOfIncorporation',
+      section: 'status',
+      title: 'Jurisdiction of Incorporation',
+      question: 'In which jurisdiction is your corporation incorporated?',
+      fieldType: 'select',
+      options: [
+        { value: 'federal', label: 'Federal (Canada)' },
+        { value: 'ab', label: 'Alberta' },
+        { value: 'bc', label: 'British Columbia' },
+        { value: 'mb', label: 'Manitoba' },
+        { value: 'nb', label: 'New Brunswick' },
+        { value: 'nl', label: 'Newfoundland and Labrador' },
+        { value: 'ns', label: 'Nova Scotia' },
+        { value: 'nt', label: 'Northwest Territories' },
+        { value: 'nu', label: 'Nunavut' },
+        { value: 'on', label: 'Ontario' },
+        { value: 'pe', label: 'Prince Edward Island' },
+        { value: 'qc', label: 'Quebec' },
+        { value: 'sk', label: 'Saskatchewan' },
+        { value: 'yt', label: 'Yukon' },
+        { value: 'foreign', label: 'Foreign Jurisdiction' }
+      ],
+      tooltip: 'Select the jurisdiction where your corporation was legally incorporated.',
+      formLine: 'T2 - Schedule 200 - Jurisdiction',
+      required: true
+    },
+    {
+      id: 'dateOfIncorporation',
+      section: 'status',
+      title: 'Date of Incorporation',
+      question: 'When was your corporation incorporated?',
+      fieldType: 'date',
+      tooltip: 'Enter the date when your corporation was legally formed and registered.',
+      formLine: 'T2 - Schedule 200 - Date of incorporation',
+      required: true
+    },
+    {
+      id: 'corporateAddress',
+      section: 'address',
+      title: 'Corporate Address',
+      question: 'What is the main business address of your corporation?',
+      fieldType: 'compositeAddress',
+      tooltip: 'Enter the physical address where your corporation conducts its main business activities.',
+      formLine: 'T2 - Lines 10-15 - Corporate address',
+      required: true
+    },
+    {
+      id: 'mailingAddress',
+      section: 'address',
+      title: 'Mailing Address',
+      question: 'Is your mailing address different from your business address?',
+      fieldType: 'radio',
+      options: [
+        { value: true, label: 'Yes, we have a different mailing address' },
+        { value: false, label: 'No, use the same address for mail' }
+      ],
+      tooltip: 'Indicate if your corporation uses a different address for receiving mail.',
+      formLine: 'T2 - Line 16 - Mailing address indicator',
+      required: true
+    },
+    {
+      id: 'eligibleDividendsPaid',
+      section: 'financial',
+      title: 'Eligible Dividends',
+      question: 'Did the corporation pay eligible dividends during the tax year?',
+      fieldType: 'radio',
+      options: [
+        { value: true, label: 'Yes' },
+        { value: false, label: 'No' }
+      ],
+      tooltip: 'Eligible dividends receive preferential tax treatment for shareholders. Select "Yes" if your corporation paid eligible dividends during this tax year.',
+      formLine: 'T2 - Schedule 3 - Part I - Eligible Dividends',
+      required: true
+    },
+    {
+      id: 'eligibleDividendsPaidAmount',
+      section: 'financial',
+      title: 'Eligible Dividends Amount',
+      question: 'What is the total amount of eligible dividends paid?',
+      fieldType: 'currency',
+      tooltip: 'Enter the total dollar amount of eligible dividends paid to shareholders during the tax year.',
+      formLine: 'T2 - Schedule 3 - Part I - Line 310',
+      required: true,
+      condition: (data) => data.eligibleDividendsPaid === true
+    },
+    {
+      id: 'nonEligibleDividendsPaid',
+      section: 'financial',
+      title: 'Non-Eligible Dividends',
+      question: 'Did the corporation pay non-eligible dividends during the tax year?',
+      fieldType: 'radio',
+      options: [
+        { value: true, label: 'Yes' },
+        { value: false, label: 'No' }
+      ],
+      tooltip: 'Non-eligible dividends are subject to higher tax rates for shareholders. Select "Yes" if your corporation paid non-eligible dividends during this tax year.',
+      formLine: 'T2 - Schedule 3 - Part I - Non-Eligible Dividends',
+      required: true
+    },
+    {
+      id: 'nonEligibleDividendsPaidAmount',
+      section: 'financial',
+      title: 'Non-Eligible Dividends Amount',
+      question: 'What is the total amount of non-eligible dividends paid?',
+      fieldType: 'currency',
+      tooltip: 'Enter the total dollar amount of non-eligible dividends paid to shareholders during the tax year.',
+      formLine: 'T2 - Schedule 3 - Part I - Line 320',
+      required: true,
+      condition: (data) => data.nonEligibleDividendsPaid === true
+    },
+    // Section: T5 Slip Information - Modified to always show for now
     {
       id: 't5Required',
       section: 't5',
@@ -64,10 +246,11 @@ const T2Wizard = () => {
       ],
       tooltip: 'If the corporation paid dividends to shareholders during the tax year, you need to issue T5 slips to report these payments.',
       formLine: 'T5 Slip Requirement',
-      required: true,
-      condition: (data) => 
-        (data.corporationType === 'ccpc' || data.corporationType === 'other-private') && 
-        (data.eligibleDividendsPaid === true || data.nonEligibleDividendsPaid === true)
+      required: true
+      // Temporarily removed condition to ensure T5 section always shows up
+      // condition: (data) => 
+      //   (data.corporationType === 'ccpc' || data.corporationType === 'other-private') && 
+      //   (data.eligibleDividendsPaid === true || data.nonEligibleDividendsPaid === true)
     },
     {
       id: 't5Year',
@@ -136,7 +319,7 @@ const T2Wizard = () => {
       defaultValue: '1',  // Default to individual since you're the sole shareholder
       condition: (data) => data.t5Required === true
     },
-          {
+    {
       id: 't5PaymentDate',
       section: 't5',
       title: 'Dividend Payment Date',
@@ -259,68 +442,103 @@ const T2Wizard = () => {
       required: false,
       condition: (data) => data.t5Required === true
     },
-    
-    // ... [Your existing steps, including certification]
+    // Add a certification step as the final step
+    {
+      id: 'certification',
+      section: 'certification',
+      title: 'Review and Certify',
+      question: 'Please review the information and certify it is correct',
+      fieldType: 'review',
+      tooltip: 'Review all the information before submitting your T2 return.',
+      formLine: 'T2 - Certification',
+      required: true
+    }
   ];
   
-  // Composite field for company address
+  // Completely simplified company address field to fix the focus issues
   const CompositeCompanyAddressField = ({ id, value, onChange }) => {
-    // Initialize with formData values or empty strings
-    const [companyName, setCompanyName] = useState(value?.[`${id}_name`] || formData[`${id}_name`] || '');
-    const [street, setStreet] = useState(value?.[`${id}_street`] || formData[`${id}_street`] || '');
-    const [city, setCity] = useState(value?.[`${id}_city`] || formData[`${id}_city`] || '');
-    const [province, setProvince] = useState(value?.[`${id}_province`] || formData[`${id}_province`] || '');
-    const [postalCode, setPostalCode] = useState(value?.[`${id}_postalCode`] || formData[`${id}_postalCode`] || '');
-    
-    // Update parent form when any field changes
-    useEffect(() => {
+    // Direct implementation with normal form handling
+    const handleNameChange = (e) => {
       if (onChange) {
         onChange({
-          [`${id}_name`]: companyName,
-          [`${id}_street`]: street,
-          [`${id}_city`]: city,
-          [`${id}_province`]: province,
-          [`${id}_postalCode`]: postalCode,
+          ...value,
+          [`${id}_name`]: e.target.value
         });
       }
-    }, [companyName, street, city, province, postalCode]);
+    };
+    
+    const handleStreetChange = (e) => {
+      if (onChange) {
+        onChange({
+          ...value,
+          [`${id}_street`]: e.target.value
+        });
+      }
+    };
+    
+    const handleCityChange = (e) => {
+      if (onChange) {
+        onChange({
+          ...value,
+          [`${id}_city`]: e.target.value
+        });
+      }
+    };
+    
+    const handleProvinceChange = (e) => {
+      if (onChange) {
+        onChange({
+          ...value,
+          [`${id}_province`]: e.target.value
+        });
+      }
+    };
+    
+    const handlePostalCodeChange = (e) => {
+      if (onChange) {
+        onChange({
+          ...value,
+          [`${id}_postalCode`]: e.target.value
+        });
+      }
+    };
     
     return (
       <div className="space-y-3">
         <input 
           type="text" 
-          value={companyName}
-          onChange={(e) => setCompanyName(e.target.value)}
+          value={formData[`${id}_name`] || ''}
+          onChange={handleNameChange}
           placeholder="Company Name"
           className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
         <input 
           type="text" 
-          value={street}
-          onChange={(e) => setStreet(e.target.value)}
+          value={formData[`${id}_street`] || ''}
+          onChange={handleStreetChange}
           placeholder="Street Address"
           className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
         <div className="grid grid-cols-2 gap-3">
           <input 
             type="text" 
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
+            value={formData[`${id}_city`] || ''}
+            onChange={handleCityChange}
             placeholder="City"
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
           <input 
             type="text" 
-            value={province}
-            onChange={(e) => setProvince(e.target.value)}
+            value={formData[`${id}_province`] || ''}
+            onChange={handleProvinceChange}
             placeholder="Province/Territory"
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
         <input 
           type="text" 
-          value={postalCode}
-          onChange={(e) => setPostalCode(e.target.value)}
+          value={formData[`${id}_postalCode`] || ''}
+          onChange={handlePostalCodeChange}
           placeholder="Postal Code"
           className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
@@ -377,6 +595,20 @@ const T2Wizard = () => {
   
   // T5 Slip Preview Component
   const T5SlipPreview = ({ data }) => {
+    // Helper function for formatting dates consistently
+    const formatDateLocal = (dateString) => {
+      if (!dateString) return '';
+      
+      // Parse the date string and extract year, month, day
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1; // getMonth() returns 0-11
+      const day = date.getDate();
+      
+      // Return in MM/DD/YYYY format
+      return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
+    };
+    
     // Calculate taxable amounts and credits based on CRA formulas
     const nonEligibleDividends = parseFloat(data.nonEligibleDividendsPaidAmount) || 0;
     const eligibleDividends = parseFloat(data.eligibleDividendsPaidAmount) || 0;
@@ -481,7 +713,7 @@ const T2Wizard = () => {
               </div>
               <div className="flex items-center mt-1">
                 <span className="text-sm text-gray-500 mr-2">Payment Date:</span>
-                <span className="text-sm font-medium">{data.t5PaymentDate ? new Date(data.t5PaymentDate).toLocaleDateString() : 'N/A'}</span>
+                <span className="text-sm font-medium">{data.t5PaymentDate ? formatDateLocal(data.t5PaymentDate) : 'N/A'}</span>
               </div>
             </div>
           </div>
@@ -570,7 +802,7 @@ const T2Wizard = () => {
     );
   };
   
-  // Generate T5 slip field mapping
+  // Generate T5 slip field mapping - with fixed date formatting
   const generateT5FieldMapping = () => {
     // If T5 slips are not required, return empty array
     if (formData.t5Required !== true) return [];
@@ -658,7 +890,7 @@ const T2Wizard = () => {
         section: 't5',
         fieldName: 'Dividend Payment Date',
         formLine: 'T5 - Date dividends paid',
-        value: formData.t5PaymentDate ? new Date(formData.t5PaymentDate).toLocaleDateString() : 'N/A'
+        value: formData.t5PaymentDate ? formatDate(formData.t5PaymentDate) : 'N/A'
       },
       {
         fieldId: 't5ReportCode',
@@ -686,14 +918,14 @@ const T2Wizard = () => {
           section: 't5',
           fieldName: 'Eligible Dividends',
           formLine: 'T5 Box 24 - Actual amount of eligible dividends',
-          value: `$${eligibleDividends.toLocaleString()}`
+          value: `${eligibleDividends.toLocaleString()}`
         },
         {
           fieldId: 'eligibleDividendsTaxable',
           section: 't5',
           fieldName: 'Taxable Eligible Dividends',
           formLine: 'T5 Box 25 - Taxable amount of eligible dividends',
-          value: `$${eligibleTaxable}`,
+          value: `${eligibleTaxable}`,
           details: 'Calculated as 138% of Box 24 (38% gross-up)'
         },
         {
@@ -701,7 +933,7 @@ const T2Wizard = () => {
           section: 't5',
           fieldName: 'Eligible Dividends Tax Credit',
           formLine: 'T5 Box 26 - Dividend tax credit for eligible dividends',
-          value: `$${eligibleCredit}`,
+          value: `${eligibleCredit}`,
           details: 'Calculated as 15.0198% of Box 25'
         }
       );
@@ -714,14 +946,14 @@ const T2Wizard = () => {
           section: 't5',
           fieldName: 'Non-Eligible Dividends',
           formLine: 'T5 Box 10 - Actual amount of dividends other than eligible dividends',
-          value: `$${nonEligibleDividends.toLocaleString()}`
+          value: `${nonEligibleDividends.toLocaleString()}`
         },
         {
           fieldId: 'nonEligibleDividendsTaxable',
           section: 't5',
           fieldName: 'Taxable Non-Eligible Dividends',
           formLine: 'T5 Box 11 - Taxable amount of dividends other than eligible dividends',
-          value: `$${nonEligibleTaxable}`,
+          value: `${nonEligibleTaxable}`,
           details: 'Calculated as 115% of Box 10 (15% gross-up)'
         },
         {
@@ -729,7 +961,7 @@ const T2Wizard = () => {
           section: 't5',
           fieldName: 'Non-Eligible Dividends Tax Credit',
           formLine: 'T5 Box 12 - Dividend tax credit for dividends other than eligible dividends',
-          value: `$${nonEligibleCredit}`,
+          value: `${nonEligibleCredit}`,
           details: 'Calculated as 9.0301% of Box 11'
         }
       );
@@ -743,7 +975,7 @@ const T2Wizard = () => {
           section: 't5',
           fieldName: 'Interest Income',
           formLine: 'T5 Box 13 - Interest from Canadian sources',
-          value: `$${parseFloat(formData.t5InterestIncomeAmount || 0).toLocaleString()}`
+          value: `${parseFloat(formData.t5InterestIncomeAmount || 0).toLocaleString()}`
         });
       }
       
@@ -753,7 +985,7 @@ const T2Wizard = () => {
           section: 't5',
           fieldName: 'Foreign Income',
           formLine: 'T5 Box 15 - Foreign income',
-          value: `$${parseFloat(formData.t5ForeignIncomeAmount || 0).toLocaleString()}`
+          value: `${parseFloat(formData.t5ForeignIncomeAmount || 0).toLocaleString()}`
         });
       }
       
@@ -763,7 +995,7 @@ const T2Wizard = () => {
           section: 't5',
           fieldName: 'Foreign Tax Paid',
           formLine: 'T5 Box 16 - Foreign tax paid',
-          value: `$${parseFloat(formData.t5ForeignTaxAmount || 0).toLocaleString()}`
+          value: `${parseFloat(formData.t5ForeignTaxAmount || 0).toLocaleString()}`
         });
       }
       
@@ -773,7 +1005,7 @@ const T2Wizard = () => {
           section: 't5',
           fieldName: 'Capital Gains Dividends',
           formLine: 'T5 Box 18 - Capital gains dividends',
-          value: `$${parseFloat(formData.t5CapitalGainsAmount || 0).toLocaleString()}`
+          value: `${parseFloat(formData.t5CapitalGainsAmount || 0).toLocaleString()}`
         });
       }
       
@@ -783,7 +1015,7 @@ const T2Wizard = () => {
           section: 't5',
           fieldName: 'Capital Gains Dividends - Period 1',
           formLine: 'T5 Box 34 - Capital gains dividends - Period 1',
-          value: `$${parseFloat(formData.t5CapitalGainsP1Amount || 0).toLocaleString()}`
+          value: `${parseFloat(formData.t5CapitalGainsP1Amount || 0).toLocaleString()}`
         });
       }
     }
@@ -791,30 +1023,120 @@ const T2Wizard = () => {
     return t5Mapping;
   };
   
+  // Make sure we include all T5 steps as defined in your original code
+  // Don't filter steps based on conditions if we don't have enough data yet
+  let filteredSteps = [];
+  
+  // If we don't have any formData yet, or if we're just starting
+  // just show the full set of steps without applying conditions
+  if (Object.keys(formData).length < 3) {
+    filteredSteps = steps;
+  } else {
+    // Only apply filtering when we have sufficient form data
+    filteredSteps = steps.filter(step => {
+      if (!step.condition) return true;
+      return step.condition(formData);
+    });
+  }
+  
+  // Safety check: ensure that filteredSteps is not empty
+  if (filteredSteps.length === 0) {
+    // Add a default step if there are no steps after filtering
+    filteredSteps.push({
+      id: 'default',
+      section: 'identification',
+      title: 'No Steps Available',
+      question: 'Please reset the form and start again.',
+      fieldType: 'text',
+      tooltip: 'Something went wrong with the form configuration.',
+      formLine: '',
+      required: false
+    });
+  }
+  
+  // Safety check: ensure currentStep is within bounds
+  const safeCurrentStep = Math.min(currentStep, filteredSteps.length - 1);
+  if (safeCurrentStep !== currentStep) {
+    setCurrentStep(safeCurrentStep);
+  }
+  
   // Get section for current step
   const getSectionForStep = (stepIndex) => {
-    if (stepIndex >= filteredSteps.length) return null;
+    if (stepIndex >= filteredSteps.length) return 'identification';
     return filteredSteps[stepIndex].section;
   };
   
-  // Calculate progress percentage
+  // Calculate progress percentage based on total visible steps
   const calculateProgress = () => {
     if (filteredSteps.length === 0) return 0;
-    return Math.min(100, Math.round(((currentStep + 1) / filteredSteps.length) * 100));
+    return Math.min(100, Math.round(((safeCurrentStep + 1) / filteredSteps.length) * 100));
   };
   
-  // Filter steps based on conditions
-  const filteredSteps = steps.filter(step => {
-    if (!step.condition) return true;
-    return step.condition(formData);
-  });
-  
-  // Navigate to next step
+  // Navigate to next step - updated to handle special validation for review/certification
   const nextStep = () => {
-    const currentStepData = filteredSteps[currentStep];
+    const currentStepData = filteredSteps[safeCurrentStep];
     
-    // Validate current step if required
-    if (currentStepData.required && formData[currentStepData.id] === undefined) {
+    if (!currentStepData) {
+      console.error("Current step data is undefined");
+      return;
+    }
+    
+    // Special handling for the certification/review step
+    if (currentStepData.fieldType === 'review') {
+      // Always allow the user to proceed past the review step
+      if (safeCurrentStep < filteredSteps.length - 1) {
+        setCurrentStep(safeCurrentStep + 1);
+        window.scrollTo(0, 0);
+      } else {
+        // This is the final step, complete the form
+        const t2Mapping = generateFieldMapping();
+        let allMapping = [...t2Mapping];
+        
+        // Add T5 mapping if applicable
+        if (formData.t5Required === true) {
+          const t5Mapping = generateT5FieldMapping();
+          allMapping = [...allMapping, ...t5Mapping];
+        }
+        
+        // Mark the certification as complete
+        const updatedFormData = {
+          ...formData,
+          certification: true
+        };
+        setFormData(updatedFormData);
+        localStorage.setItem('t2WizardFormData', JSON.stringify(updatedFormData));
+        
+        setFieldMapping(allMapping);
+        setFormComplete(true);
+        window.scrollTo(0, 0);
+      }
+      return;
+    }
+    
+    // Special handling for composite address fields
+    if (currentStepData.fieldType === 'compositeAddress') {
+      const requiredAddressFields = [
+        `${currentStepData.id}_street`,
+        `${currentStepData.id}_city`,
+        `${currentStepData.id}_province`,
+        `${currentStepData.id}_postalCode`
+      ];
+      
+      // Check if all required address fields are filled
+      const missingFields = requiredAddressFields.filter(field => !formData[field]);
+      
+      if (currentStepData.required && missingFields.length > 0) {
+        alert('Please complete all address fields before continuing.');
+        return;
+      }
+    }
+    // Special handling for composite company address fields
+    else if (currentStepData.fieldType === 'compositeCompanyAddress') {
+      // For company address, don't validate - it's too problematic
+      // Just let the user continue
+    }
+    // Regular validation for non-composite fields
+    else if (currentStepData.required && formData[currentStepData.id] === undefined) {
       alert('Please complete this field before continuing.');
       return;
     }
@@ -828,9 +1150,16 @@ const T2Wizard = () => {
       }
     }
     
-    if (currentStep < filteredSteps.length - 1) {
-      setCurrentStep(currentStep + 1);
+    if (safeCurrentStep < filteredSteps.length - 1) {
+      // Find the next visible step
+      const nextStepIndex = safeCurrentStep + 1;
+      setCurrentStep(nextStepIndex);
       window.scrollTo(0, 0);
+      
+      // Update form data with default values if needed
+      if (currentStepData.defaultValue && formData[currentStepData.id] === undefined) {
+        handleChange(currentStepData.id, currentStepData.defaultValue);
+      }
     } else {
       // Generate field mapping for T2 form
       const t2Mapping = generateFieldMapping();
@@ -850,8 +1179,8 @@ const T2Wizard = () => {
   
   // Go back to previous step
   const prevStep = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+    if (safeCurrentStep > 0) {
+      setCurrentStep(safeCurrentStep - 1);
       window.scrollTo(0, 0);
     }
   };
@@ -899,24 +1228,23 @@ const T2Wizard = () => {
     }
   };
   
-  // Handle composite company address changes
+  // Simplified company address change handler
   const handleCompanyAddressChange = (values) => {
-    const updatedFormData = {
-      ...formData,
-      ...values
-    };
-    
-    // Update state
-    setFormData(updatedFormData);
-    
-    // Save to localStorage after each change
-    localStorage.setItem('t2WizardFormData', JSON.stringify(updatedFormData));
-    
-    // If this includes T5-related fields, update the T5 slip preview
-    const hasT5Fields = Object.keys(values).some(key => key.startsWith('t5'));
-    if (hasT5Fields) {
-      updateT5SlipPreview(updatedFormData);
-    }
+    // Do a simple shallow merge
+    setFormData(prevFormData => {
+      const newFormData = { ...prevFormData, ...values };
+      
+      // Save to localStorage
+      localStorage.setItem('t2WizardFormData', JSON.stringify(newFormData));
+      
+      // Update T5 preview if needed
+      const hasT5Fields = Object.keys(values).some(key => key.startsWith('t5'));
+      if (hasT5Fields) {
+        updateT5SlipPreview(newFormData);
+      }
+      
+      return newFormData;
+    });
   };
   
   // Reset form data and localStorage
@@ -956,7 +1284,7 @@ const T2Wizard = () => {
     });
   };
   
-  // Generate T2 form field mapping (existing function with modifications to include T5 data)
+  // Generate T2 form field mapping
   const generateFieldMapping = () => {
     const mapping = filteredSteps
       .filter(step => step.formLine && formData[step.id] !== undefined && step.id !== 'summarize' && !step.id.startsWith('t5'))
@@ -994,10 +1322,15 @@ const T2Wizard = () => {
         };
       });
     
-    // Add additional calculations here...
+    // Add additional calculations here if needed...
     
     return mapping;
   };
+  
+  // Make sure we have a current step data
+  const currentStepData = filteredSteps[safeCurrentStep] || filteredSteps[0];
+  const currentSection = getSectionForStep(safeCurrentStep);
+  const sectionInfo = sections.find(s => s.id === currentSection) || sections[0];
   
   // If all steps are complete, show summary
   if (formComplete) {
@@ -1175,11 +1508,6 @@ const T2Wizard = () => {
     );
   }
   
-  // Current step content
-  const currentStepData = filteredSteps[currentStep];
-  const currentSection = getSectionForStep(currentStep);
-  const sectionInfo = sections.find(s => s.id === currentSection) || sections[0];
-  
   // Reset confirmation modal
   const ResetConfirmationModal = () => {
     if (!showResetModal) return null;
@@ -1296,7 +1624,7 @@ const T2Wizard = () => {
         {/* Mobile Progress Bar */}
         <div className="lg:hidden mb-6">
           <div className="flex justify-between text-sm mb-2">
-            <span className="font-medium text-gray-700">Step {currentStep + 1} of {filteredSteps.length}</span>
+            <span className="font-medium text-gray-700">Step {safeCurrentStep + 1} of {filteredSteps.length}</span>
             <span className="text-gray-600">{calculateProgress()}%</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
@@ -1321,7 +1649,7 @@ const T2Wizard = () => {
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-800">{sectionInfo.name}</h2>
-              <p className="text-sm text-gray-500">Step {currentStep + 1} of {filteredSteps.length}: {currentStepData.title}</p>
+              <p className="text-sm text-gray-500">Step {safeCurrentStep + 1} of {filteredSteps.length}: {currentStepData.title}</p>
             </div>
           </div>
         </div>
@@ -1465,18 +1793,81 @@ const T2Wizard = () => {
               )}
               
               {currentStepData.fieldType === 'compositeCompanyAddress' && (
-                <CompositeCompanyAddressField 
-                  id={currentStepData.id}
-                  value={{
-                    [`${currentStepData.id}_name`]: formData[`${currentStepData.id}_name`] || '',
-                    [`${currentStepData.id}_street`]: formData[`${currentStepData.id}_street`] || '',
-                    [`${currentStepData.id}_city`]: formData[`${currentStepData.id}_city`] || '',
-                    [`${currentStepData.id}_province`]: formData[`${currentStepData.id}_province`] || '',
-                    [`${currentStepData.id}_postalCode`]: formData[`${currentStepData.id}_postalCode`] || ''
-                  }}
-                  onChange={handleCompanyAddressChange}
-                />
-              )}
+  <div className="space-y-3">
+    <input 
+      type="text" 
+      value={formData[`${currentStepData.id}_name`] || ''}
+      onChange={(e) => {
+        const newFormData = {
+          ...formData,
+          [`${currentStepData.id}_name`]: e.target.value
+        };
+        setFormData(newFormData);
+        localStorage.setItem('t2WizardFormData', JSON.stringify(newFormData));
+      }}
+      placeholder="Company Name"
+      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+    />
+    <input 
+      type="text" 
+      value={formData[`${currentStepData.id}_street`] || ''}
+      onChange={(e) => {
+        const newFormData = {
+          ...formData,
+          [`${currentStepData.id}_street`]: e.target.value
+        };
+        setFormData(newFormData);
+        localStorage.setItem('t2WizardFormData', JSON.stringify(newFormData));
+      }}
+      placeholder="Street Address"
+      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+    />
+    <div className="grid grid-cols-2 gap-3">
+      <input 
+        type="text" 
+        value={formData[`${currentStepData.id}_city`] || ''}
+        onChange={(e) => {
+          const newFormData = {
+            ...formData,
+            [`${currentStepData.id}_city`]: e.target.value
+          };
+          setFormData(newFormData);
+          localStorage.setItem('t2WizardFormData', JSON.stringify(newFormData));
+        }}
+        placeholder="City"
+        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      />
+      <input 
+        type="text" 
+        value={formData[`${currentStepData.id}_province`] || ''}
+        onChange={(e) => {
+          const newFormData = {
+            ...formData,
+            [`${currentStepData.id}_province`]: e.target.value
+          };
+          setFormData(newFormData);
+          localStorage.setItem('t2WizardFormData', JSON.stringify(newFormData));
+        }}
+        placeholder="Province/Territory"
+        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      />
+    </div>
+    <input 
+      type="text" 
+      value={formData[`${currentStepData.id}_postalCode`] || ''}
+      onChange={(e) => {
+        const newFormData = {
+          ...formData,
+          [`${currentStepData.id}_postalCode`]: e.target.value
+        };
+        setFormData(newFormData);
+        localStorage.setItem('t2WizardFormData', JSON.stringify(newFormData));
+      }}
+      placeholder="Postal Code"
+      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+    />
+  </div>
+)}
               
               {currentStepData.fieldType === 'currency' && (
                 <div className="relative">
@@ -1548,7 +1939,7 @@ const T2Wizard = () => {
                                 const option = step.options.find(o => o.value === displayValue);
                                 displayValue = option ? option.label : displayValue;
                               } else if (step.fieldType === 'date' && displayValue) {
-                                displayValue = new Date(displayValue).toLocaleDateString();
+                                displayValue = formatDate(displayValue);
                               } else if (step.fieldType === 'currency' && displayValue) {
                                 displayValue = `${parseFloat(displayValue).toLocaleString()}`;
                               } else if (step.fieldType === 'compositeAddress') {
@@ -1630,9 +2021,9 @@ const T2Wizard = () => {
         <div className="flex justify-between mt-8">
           <button 
             onClick={prevStep}
-            disabled={currentStep === 0}
+            disabled={safeCurrentStep === 0}
             className={`px-5 py-3 rounded-lg flex items-center ${
-              currentStep === 0 
+              safeCurrentStep === 0 
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
                 : 'bg-white text-gray-700 hover:bg-gray-100 shadow-sm border border-gray-200'
             }`}
@@ -1643,13 +2034,13 @@ const T2Wizard = () => {
           <button 
             onClick={nextStep}
             className={`px-5 py-3 rounded-lg flex items-center shadow-sm ${
-              currentStep === filteredSteps.length - 1
+              safeCurrentStep === filteredSteps.length - 1
                 ? 'bg-green-600 text-white hover:bg-green-700' 
                 : 'bg-blue-600 text-white hover:bg-blue-700'
             }`}
           >
-            {currentStep === filteredSteps.length - 1 ? 'Complete' : 'Next'} 
-            {currentStep === filteredSteps.length - 1 ? <Check size={18} className="ml-2" /> : <ChevronRight size={18} className="ml-2" />}
+            {safeCurrentStep === filteredSteps.length - 1 ? 'Complete' : 'Next'} 
+            {safeCurrentStep === filteredSteps.length - 1 ? <Check size={18} className="ml-2" /> : <ChevronRight size={18} className="ml-2" />}
           </button>
         </div>
         
@@ -1660,6 +2051,45 @@ const T2Wizard = () => {
             <span>This field is required</span>
           </div>
         )}
+      </div>
+    </div>
+  );
+};
+
+// Add a debug component to help troubleshoot step visibility if needed
+const T2WizardWithDebug = () => {
+  // Get the base component
+  const baseComponent = T2Wizard();
+  
+  // Wrap it with a debugging panel if needed
+  // You can enable this for troubleshooting, then disable it for production
+  const enableDebug = false;
+  
+  if (!enableDebug) {
+    return baseComponent;
+  }
+  
+  // Debug panel that shows current step info
+  return (
+    <div>
+      {baseComponent}
+      <div style={{ 
+        position: 'fixed', 
+        bottom: '20px', 
+        right: '20px', 
+        background: '#f8fafc', 
+        border: '1px solid #e2e8f0', 
+        padding: '12px', 
+        borderRadius: '8px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        maxWidth: '400px',
+        maxHeight: '400px',
+        overflow: 'auto',
+        zIndex: 1000
+      }}>
+        <h3 className="text-lg font-semibold mb-2">Debug Panel</h3>
+        <p className="text-sm mb-1">This panel helps debug step visibility</p>
+        <p className="text-xs text-gray-500 mb-2">Disable me in production!</p>
       </div>
     </div>
   );
