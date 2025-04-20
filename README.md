@@ -4,8 +4,11 @@ Here's the README file in markdown format:
 
 A sleek, modern, browser-based wizard to prepare your **T2 Corporate Tax Return** and **T5 Dividend Slips** — tailored for small business owners who want control, clarity, and CRA-compliant results.
 
-**🔗 Live Demo:** [https://t2-wizard.pages.dev/](https://t2-wizard.pages.dev/)
+**🔗 Live Demo:** 
 
+[https://t2-wizard.pages.dev/](https://t2-wizard.pages.dev/)
+
+[https://t2-wizard.vercel.app/](https://t2-wizard.vercel.app/)
 ---
 
 ## 🧾 What It Does
