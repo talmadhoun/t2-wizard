@@ -20,15 +20,32 @@ const T2Wizard = () => {
   const formatDate = (dateString) => {
     if (!dateString) return '';
     
-    // Parse the date string and extract year, month, day
-    // This approach avoids timezone issues by manually constructing the date parts
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1; // getMonth() returns 0-11
-    const day = date.getDate();
+    // For HTML date inputs (YYYY-MM-DD format)
+    if (dateString.includes('-')) {
+      const [year, month, day] = dateString.split('-').map(part => parseInt(part, 10));
+      // Return in MM/DD/YYYY format
+      return `${String(month).padStart(2, '0')}/${String(day).padStart(2, '0')}/${year}`;
+    }
     
-    // Return in MM/DD/YYYY format
-    return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
+    // If already in MM/DD/YYYY format, return as is
+    if (dateString.includes('/')) {
+      return dateString;
+    }
+    
+    // For other date formats, handle without timezone issues
+    try {
+      // Split the date string by parts to avoid timezone conversion
+      const dateParts = new Date(dateString).toISOString().split('T')[0].split('-');
+      const year = parseInt(dateParts[0]);
+      const month = parseInt(dateParts[1]);
+      const day = parseInt(dateParts[2]);
+      
+      // Return in MM/DD/YYYY format
+      return `${String(month).padStart(2, '0')}/${String(day).padStart(2, '0')}/${year}`;
+    } catch (e) {
+      console.error('Error formatting date:', e);
+      return dateString; // Return original if parsing fails
+    }
   };
   
   // Load saved form data from localStorage on initial render
@@ -597,16 +614,8 @@ const T2Wizard = () => {
   const T5SlipPreview = ({ data }) => {
     // Helper function for formatting dates consistently
     const formatDateLocal = (dateString) => {
-      if (!dateString) return '';
-      
-      // Parse the date string and extract year, month, day
-      const date = new Date(dateString);
-      const year = date.getFullYear();
-      const month = date.getMonth() + 1; // getMonth() returns 0-11
-      const day = date.getDate();
-      
-      // Return in MM/DD/YYYY format
-      return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
+      // Use the same formatDate function to ensure consistency
+      return formatDate(dateString);
     };
     
     // Calculate taxable amounts and credits based on CRA formulas
@@ -1299,7 +1308,7 @@ const T2Wizard = () => {
           const option = step.options.find(o => o.value === displayValue);
           displayValue = option ? option.label : displayValue;
         } else if (step.fieldType === 'date' && displayValue) {
-          displayValue = new Date(displayValue).toLocaleDateString();
+          displayValue = formatDate(displayValue);
         } else if (step.fieldType === 'currency' && displayValue) {
           displayValue = `$${parseFloat(displayValue).toLocaleString()}`;
         } else if (step.fieldType === 'compositeAddress') {
