@@ -60,16 +60,17 @@ It helps you **prepare and organize** your tax data for input into **FutureTax T
 
 # 🧾 Recommended T2 Corporate Tax Filing Software (Canada)
 
-A comparison of the top CRA-certified software for filing T2 corporate tax returns in Canada — ideal for small businesses, solo owners, and late multi-year filings (2021–2024).
+A comparison of CRA-certified software for filing T2 corporate tax returns in Canada — ideal for small businesses, solo owners, and multi-year filings (2021–2024).
 
-| Name           | Cost (CAD)                            | Supports Multi-Year | CRA Certified | Internet Filing | User-Friendliness | Website |
-|----------------|----------------------------------------|----------------------|----------------|------------------|-------------------|---------|
-| **FutureTax T2** | $59.99 (1 return), $99.99 (5 returns) | ✅ Yes               | ✅ Yes         | ✅ Yes           | ✅ High           | [futuretax.ca/t2](https://www.futuretax.ca/t2/) |
-| **UFile T2**     | Varies                                | ✅ Yes               | ✅ Yes         | ✅ Yes           | ✅ Very High      | [ufile.ca](https://www.ufile.ca/products/ufile-t2) |
-| **Gofile**       | Varies                                | ✅ Yes               | ✅ Yes         | ✅ Yes           | ✅ High           | [gofile.ca](https://gofile.ca/) |
-| **TaxTron T2**   | ~$70/year                             | ✅ Yes               | ✅ Yes         | ✅ Yes           | 🟡 Moderate       | [taxtron.ca](https://www.taxtron.ca/) |
-| **ProFile T2**   | $310 (1 return)                       | ✅ Yes               | ✅ Yes         | ✅ Yes           | ❌ Low (pro only) | [intuit.com/ca/products/profile](https://www.intuit.com/ca/products/profile/) |
-| **Taxprep**      | $$$ (Professional-only)               | ✅ Yes               | ✅ Yes         | ✅ Yes           | ❌ Low (pro only) | [taxprep.com](https://www.taxprep.com/) |
+| Name             | Cost (CAD)                               | Supports Multi-Year | CRA Certified | Internet Filing | User-Friendliness | Website                              |
+|------------------|------------------------------------------|---------------------|---------------|-----------------|-------------------|--------------------------------------|
+| **FutureTax T2** | $59.99 (1 return), $99.99 (5 returns)    | ✅ Yes              | ✅ Yes        | ✅ Yes          | ✅ High           | [futuretax.ca/t2](https://www.futuretax.ca/t2/) |
+| **UFile T2**     | $186.95 per return (2024 price)          | ✅ Yes              | ✅ Yes        | ✅ Yes          | ✅ Very High      | [ufile.ca](https://www.ufile.ca/products/ufilet2) |
+| **Gofile**       | $999.00 per year-end filing              | ✅ Yes              | ✅ Yes        | ✅ Yes          | ✅ Very High      | [gofile.ca](https://www.gofile.ca/) |
+| **TaxTron T2**   | ~$70/year                                | ✅ Yes              | ✅ Yes        | ✅ Yes          | 🟡 Moderate       | [taxtron.ca](https://www.taxtron.ca/) |
+| **ProFile T2**   | $310 (1 return)                          | ✅ Yes              | ✅ Yes        | ✅ Yes          | ❌ Low (pro only) | [intuit.com/ca/products/profile](https://www.intuit.com/ca/products/profile/) |
+| **Taxprep**      | $1,086 (Lite, 10 returns) to $2,385+     | ✅ Yes              | ✅ Yes        | ✅ Yes          | ❌ Low (pro only) | [taxprep.com](https://www.taxprep.com/) |
+
 
 > ✅ Best overall for most small businesses: **FutureTax T2**
 > 🧠 Easiest online platform alternative: **UFile T2** or **Gofile**
